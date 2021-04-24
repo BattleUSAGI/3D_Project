@@ -3,17 +3,22 @@
 // MoveBehaviour inherits from GenericBehaviour. This class corresponds to basic walk and run behaviour, it is the default behaviour.
 public class MoveBehaviour : GenericBehaviour
 {
+	// 跑、冲刺
 	public float walkSpeed = 0.15f;                 // Default walk speed.
 	public float runSpeed = 1.0f;                   // Default run speed.
 	public float sprintSpeed = 2.0f;                // Default sprint speed.
 	public float speedDampTime = 0.1f;              // Default damp time to change the animations based on current speed.
+	
+	// 跳跃
 	public string jumpButton = "Jump";              // Default jump button.
 	public float jumpHeight = 1.5f;                 // Default jump height.
 	public float jumpIntertialForce = 10f;          // Default horizontal inertial force when jumping.
 
 	private float speed, speedSeeker;               // Moving speed.
+
 	private int jumpBool;                           // Animator variable related to jumping.
 	private int groundedBool;                       // Animator variable related to whether or not the player is on ground.
+	
 	private bool jump;                              // Boolean to determine whether or not the player started a jump.
 	private bool isColliding;                       // Boolean to determine if the player has collided with an obstacle.
 
@@ -23,11 +28,13 @@ public class MoveBehaviour : GenericBehaviour
 		// Set up the references.
 		jumpBool = Animator.StringToHash("Jump");
 		groundedBool = Animator.StringToHash("Grounded");
-		behaviourManager.GetAnim.SetBool(groundedBool, true);
+
+		//Anim用初始IsGround值为true
+		behaviourManager.GetAnim.SetBool(groundedBool, true); 
 
 		// Subscribe and register this behaviour as the default behaviour.
-		behaviourManager.SubscribeBehaviour(this);
-		behaviourManager.RegisterDefaultBehaviour(this.behaviourCode);
+		behaviourManager.SubscribeBehaviour(this);   //将MoveBehaviour类，添加到 List<GenericBehaviour> 当中
+		behaviourManager.RegisterDefaultBehaviour(this.behaviourCode);  //已经通过父类的【behaviourCode = this.GetType().GetHashCode();】字段，拿到了玩家Object的 behaviourCode
 		speedSeeker = runSpeed;
 	}
 
@@ -35,9 +42,10 @@ public class MoveBehaviour : GenericBehaviour
 	void Update()
 	{
 		// Get jump input.
+		// 当前没有jump & 玩家按下了Jump按钮 & 这个脚本的behaviourCode和当前正在执行的behavior是否一致 & 确认当前是否有行为正在Overriding
 		if (!jump && Input.GetButtonDown(jumpButton) && behaviourManager.IsCurrentBehaviour(this.behaviourCode) && !behaviourManager.IsOverriding())
 		{
-			jump = true;
+			jump = true;  //上述都为true的情况下，才可以jump
 		}
 	}
 
