@@ -4,6 +4,12 @@ using System.Collections;
 // AimBehaviour inherits from GenericBehaviour. This class corresponds to aim and strafe behaviour.
 public class AimBehaviourBasic : GenericBehaviour
 {
+	//TODO:我的变量
+	public Rigidbody bullet;
+	public Transform shootPosition;
+
+
+
 	public string aimButton = "Aim", shoulderButton = "Aim Shoulder";     // Default aim and switch shoulders buttons.
 	public Texture2D crosshair;                                           // Crosshair texture.
 	public float aimTurnSmoothing = 0.15f;                                // Speed of turn response when aiming to match camera facing.
@@ -23,8 +29,20 @@ public class AimBehaviourBasic : GenericBehaviour
 	// Update is used to set features regardless the active behaviour.
 	void Update ()
 	{
-		// Activate/deactivate aim by input.
-		if (Input.GetAxisRaw(aimButton) != 0 && !aim)
+
+		//TODO:从这里开始是我写的射击逻辑。需要做的是，从shootPosition作为起点，到视线前方的某一个终点，两点之间作为方向，发射投射物
+		if (aim && Input.GetMouseButtonDown(0))
+		{
+            Debug.Log("开始射击");
+            Rigidbody shootObject = Instantiate(bullet, shootPosition.position, shootPosition.rotation) as Rigidbody;
+            shootObject.velocity = shootPosition.forward * 10f;
+        }
+
+
+
+
+        // Activate/deactivate aim by input.
+        if (Input.GetAxisRaw(aimButton) != 0 && !aim)
 		{
 			StartCoroutine(ToggleAimOn());
 		}
@@ -66,6 +84,7 @@ public class AimBehaviourBasic : GenericBehaviour
 			behaviourManager.GetAnim.SetFloat(speedFloat, 0);
 			// This state overrides the active one.
 			behaviourManager.OverrideWithBehaviour(this);
+
 		}
 	}
 
